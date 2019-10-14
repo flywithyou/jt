@@ -31,7 +31,7 @@ public class RedisConfig {
 	private String clusterNodes;
 	
 	/**
-	 * 分片
+	 * 配置分片
 	 * @return
 	 */
 	@Bean
@@ -51,12 +51,8 @@ public class RedisConfig {
 		return list;
 	}
 
-	//	@Value("${redis.host}")
-	//	private String host;
-	//	@Value("${redis.port}")
-	//	private Integer port;
 	/**
-	 * 哨兵
+	 * 配置哨兵
 	 * @param jedisSentinelPool
 	 * @return
 	 */
