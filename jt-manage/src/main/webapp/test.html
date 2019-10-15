@@ -5,6 +5,7 @@
 <title>测试JSON跨域问题</title>
 <script type="text/javascript" src="http://manage.jt.com/js/jquery-easyui-1.4.1/jquery.min.js"></script>
 <script type="text/javascript">
+	//表示页面加载完成后执行js
 	$(function(){
 		$.get("http://manage.jt.com/test.json",function(data){
 			alert(data.name);
