@@ -119,11 +119,13 @@
 			<artifactId>httpclient</artifactId>
 		</dependency>
 
-		<!--引入dubbo配置 -->
-		<!--<dependency> <groupId>com.alibaba.boot</groupId> <artifactId>dubbo-spring-boot-starter</artifactId> 
-			<version>0.2.0</version> </dependency> -->
-
-		<!--添加Quartz的支持 -->
+		<!-- 引入dubbo配置 -->
+		<dependency>
+			<groupId>com.alibaba.boot</groupId>
+			<artifactId>dubbo-spring-boot-starter</artifactId>
+			<version>0.2.0</version>
+		</dependency>
+		<!-- 添加Quartz的支持 -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-quartz</artifactId>

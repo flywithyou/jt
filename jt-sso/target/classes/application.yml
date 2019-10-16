@@ -24,3 +24,14 @@ mybatis-plus:
 logging:
   level: 
     com.jt.mapper: debug
+
+dubbo:
+  scan:
+    basePackages: com.jt  #包扫描路径
+  application:
+    name: provider-user   #定义服务名称
+  registry:
+    address: zookeeper://192.168.88.132:2181?backup=192.168.88.132:2182,192.168.88.132:2183
+  protocol:
+    name: dubbo   #dubbo节点保存的名称
+    port: 20880   #dubbo rpc调用的端口信息
