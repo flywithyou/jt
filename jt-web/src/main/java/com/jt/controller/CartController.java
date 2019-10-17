@@ -30,13 +30,28 @@ public class CartController {
 		return "cart";
 	}
 
-	@ResponseBody
 	@RequestMapping("/update/num/{itemId}/{num}")
-	public SysResult updateCartNum(Cart cart) {
+	public String updateCartNum(Cart cart) {
 		Long userId = 7L;
 		cart.setUserId(userId);
 		cartService.updateCartNum(cart);
 		System.err.println("进来了");
-		return SysResult.Success();
+		return "redirect:/cart/show";
+	}
+	@RequestMapping("/delete/{itemId}")
+	public String  deleteCart(Cart cart) {
+		Long userId = 7L;
+		cart.setUserId(userId);
+		cartService.deleteCart(cart);
+		System.err.println("进来了");
+		return "redirect:/cart/show";
+	}
+	@RequestMapping("/add/{itemId}")
+	public String addCart(Cart cart) {
+		Long userId = 7L;
+		cart.setUserId(userId);
+		cartService.addCart(cart);
+		System.err.println("进来了");
+		return "redirect:/cart/show";
 	}
 }

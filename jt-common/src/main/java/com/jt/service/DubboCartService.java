@@ -19,5 +19,17 @@ public interface DubboCartService {
 	 * @param cart
 	 */
 	void updateCartNum(Cart cart);
+	
+	/**
+	 * 删除购物车信息
+	 * @param cart
+	 */
+	void deleteCart(Cart cart);
+	
+	/**
+	 * 新增购物车
+	 * @param cart
+	 */
+	void addCart(Cart cart);
 
 }

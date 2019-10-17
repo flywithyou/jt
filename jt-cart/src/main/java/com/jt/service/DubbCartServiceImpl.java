@@ -32,5 +32,30 @@ public class DubbCartServiceImpl implements DubboCartService {
 		int result = cartMapper.update(cartTemp, updateWrapper);
 		System.out.println(result);
 	}
+
+	@Override
+	public void deleteCart(Cart cart) {
+		QueryWrapper<Cart> queryWrapper = new QueryWrapper<Cart>();
+		queryWrapper.eq("item_id", cart.getItemId()).eq("user_id", cart.getUserId());
+		int rows = cartMapper.delete(queryWrapper);
+		System.out.println(rows);
+	}
+
+	@Override
+	public void addCart(Cart cart) {
+		//1.首先查询数据库中是否已存在相同的商品，如果存在则更新数据，否则新增购物车信息
+		QueryWrapper<Cart> queryWrapper = new QueryWrapper<Cart>();
+		queryWrapper.eq("item_id", cart.getItemId()).eq("user_id", cart.getUserId());
+		Cart result = cartMapper.selectOne(queryWrapper);
+		if (null == result) {
+			cartMapper.insert(cart);
+			return;
+		}else {
+			UpdateWrapper<Cart> updateWrapper = new UpdateWrapper<Cart>();
+			updateWrapper.eq("user_id", cart.getUserId()).eq("item_id",cart.getItemId());	
+			cart.setItemId(null).setUserId(null).setNum(cart.getNum()+result.getNum());
+			cartMapper.update(cart, updateWrapper);
+		}
+	}
 	
 }
