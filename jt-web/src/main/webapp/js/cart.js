@@ -6,9 +6,7 @@ var TTCart = {
 		$(".increment").click(function(){//＋
 			var _thisInput = $(this).siblings("input");
 			_thisInput.val(eval(_thisInput.val()) + 1);
-			debugger
 			$.post("/cart/update/num/"+_thisInput.attr("itemId")+"/"+_thisInput.val(),function(data){
-				debugger
 				TTCart.refreshTotalPrice();
 			});
 		});

@@ -10,8 +10,10 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.alibaba.dubbo.config.annotation.Reference;
 import com.jt.pojo.Cart;
 import com.jt.pojo.Order;
+import com.jt.pojo.OrderItem;
 import com.jt.pojo.User;
 import com.jt.service.DubboCartService;
+import com.jt.service.DubboOrderService;
 import com.jt.util.ThreadLocalUtil;
 import com.jt.vo.SysResult;
 
@@ -20,6 +22,10 @@ import com.jt.vo.SysResult;
 public class OrderController {
 	@Reference(check = false)
 	private DubboCartService cartService;
+	@Reference(check = false)
+	private DubboOrderService orderService;
+	
+	
 	@RequestMapping("/create")
 	public String create(Model model) {
 		User user = ThreadLocalUtil.get();
@@ -38,8 +44,22 @@ public class OrderController {
 	@ResponseBody
 	@RequestMapping("/submit")
 	public SysResult saveOrder(Order order) {
-		
-		return SysResult.Success();
+		//1.订单入库
+		String orderId = orderService.saveOrdeer(order);
+		//2.将商品信息从购物车中移除
+		User user = ThreadLocalUtil.get();
+		for (OrderItem orderItem : order.getOrderItems()) {
+			Cart cart = new Cart().setUserId(user.getId()).setItemId(Long.valueOf(orderItem.getItemId()));
+			cartService.deleteCart(cart);
+		}
+		return SysResult.Success(orderId);
 	}
+	
 	//根据orderID查询数据库，3张表
+	@RequestMapping("/success")
+	public String successOrder(String id,Model model) {
+		Order order =  orderService.findOrderById(id);
+		model.addAttribute("order",order);
+		return "success";
+	}
 }
