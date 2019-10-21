@@ -20,7 +20,7 @@ import redis.clients.jedis.JedisCluster;
 public class UserInterceptor implements HandlerInterceptor{
 	@Autowired
 	private JedisCluster jedisCluster;
-	private static final String JTUSER ="JT-USER";
+//	private static final String JTUSER ="JT-USER";
 	/**
 	 *	 方法执行之前执行
 	 *	return true 表示放行，false表示拦截
@@ -30,11 +30,14 @@ public class UserInterceptor implements HandlerInterceptor{
 	public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler)
 			throws Exception {
 		String ticket = CookieUtil.getCookieValue(request, "JT_TICKET");
-		if (!StringUtils.isEmpty(ticket)) {
-			String userJSON = jedisCluster.get(ticket);
+		String username = CookieUtil.getCookieValue(request, "JT_USERNAME");
+		String localTicket = jedisCluster.hget(username, "JT_TICKET");
+		if (ticket.equalsIgnoreCase(localTicket)) {
+			String userJSON = jedisCluster.hget(username,"JT_USERJSON");
 			if (!StringUtils.isEmpty(userJSON)) {
 				User user = ObjectMapperUtil.toObject(userJSON, User.class);
 //				request.setAttribute("JTUSER",user);
+				System.err.println(user);
 				ThreadLocalUtil.setUser(user);
 				return true;
 			}

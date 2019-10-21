@@ -45,6 +45,8 @@ public class OrderController {
 	@RequestMapping("/submit")
 	public SysResult saveOrder(Order order) {
 		//1.订单入库
+		Long userId = ThreadLocalUtil.get().getId();
+		order.setUserId(userId);
 		String orderId = orderService.saveOrdeer(order);
 		//2.将商品信息从购物车中移除
 		User user = ThreadLocalUtil.get();

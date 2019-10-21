@@ -11,7 +11,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.alibaba.dubbo.config.annotation.Reference;
 import com.jt.pojo.Cart;
-import com.jt.pojo.User;
 import com.jt.service.DubboCartService;
 import com.jt.util.ThreadLocalUtil;
 import com.jt.vo.SysResult;
@@ -30,6 +29,7 @@ public class CartController {
 	public String show(Model model,HttpServletRequest request) {
 //		User user = (User) request.getAttribute("JTUSER");
 		Long userId = ThreadLocalUtil.get().getId();
+		System.out.println(userId);
 		List<Cart> cartList = cartService.findCartListByUserId(userId);
 		model.addAttribute("cartList",cartList);
 		return "cart";

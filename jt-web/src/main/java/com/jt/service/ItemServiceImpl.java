@@ -21,6 +21,7 @@ public class ItemServiceImpl implements ItemService {
 		Map<String, String> parms = new HashMap<>();
 		parms.put("id", itemId+"");
 		String result = httpClient.doGet(url,parms);
+		System.out.println(result);
 		Item item = ObjectMapperUtil.toObject(result, Item.class);
 		return item;
 	}

@@ -14,6 +14,8 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.alibaba.dubbo.config.annotation.Reference;
 import com.jt.pojo.User;
 import com.jt.service.DubboUserService;
+import com.jt.util.CookieUtil;
+import com.jt.util.IPUtil;
 import com.jt.vo.SysResult;
 
 import redis.clients.jedis.JedisCluster;
@@ -26,7 +28,7 @@ public class UserController {
 	@Autowired
 	private JedisCluster jedisCluster;
 	
-	private static final String TICKET = "JT_TICKET";
+//	private static final String TICKET = "JT_TICKET";
 	@RequestMapping("/{moduleName}")
 	public String module(@PathVariable String moduleName) {
 		return moduleName;
@@ -42,22 +44,35 @@ public class UserController {
 	
 	@ResponseBody
 	@RequestMapping("/doLogin")
-	public SysResult doLogin(User user,HttpServletResponse response) {
-		String ticket = dubboUserSerivce.doLogin(user);
+	public SysResult doLogin(User user,HttpServletResponse response,HttpServletRequest request) {
+		//1.获取用户IP信息
+		String ip = IPUtil.getIpAddr(request);
+		//2.完成用户信息的校验
+		String ticket = dubboUserSerivce.doLogin(user,ip);
 		if (StringUtils.isEmpty(ticket)) {
-			return SysResult.fail("用户名或密码错误！");
+			return SysResult.fail();
 		}
-		//将ticket保存到客户端的cookie中
-		Cookie ticketCookie = new Cookie(TICKET, ticket);
-		//设置cookie的生命周期
-		ticketCookie.setMaxAge(7*24*3600);
-		//cookie的权限的设定，"/"表示在根路径下
-		ticketCookie.setPath("/");
-		ticketCookie.setDomain("jt.com");
-		//将cookie写到客户端
-		response.addCookie(ticketCookie);
-		return SysResult.Success(ticket);
+		//3.将用户信息存入cookie
+		CookieUtil.addCookie(request, response, "JT_TICKET", ticket, 7*24*3600, "jt.com");
+		CookieUtil.addCookie(request, response, "JT_USERNAME", user.getUsername(), 7*24*3600, "jt.com");
+		System.out.println("登录成功！");
+		return SysResult.Success();
 	}
+//		String ticket = dubboUserSerivce.doLogin(user);
+//		if (StringUtils.isEmpty(ticket)) {
+//			return SysResult.fail("用户名或密码错误！");
+//		}
+//		//将ticket保存到客户端的cookie中
+//		Cookie ticketCookie = new Cookie(TICKET, ticket);
+//		//设置cookie的生命周期
+//		ticketCookie.setMaxAge(7*24*3600);
+//		//cookie的权限的设定，"/"表示在根路径下
+//		ticketCookie.setPath("/");
+//		ticketCookie.setDomain("jt.com");
+//		//将cookie写到客户端
+//		response.addCookie(ticketCookie);
+//		return SysResult.Success(ticket);
+//	}
 	
 	/**
 	 * 0.获取JT_TICKET 的cookie的值 ticket

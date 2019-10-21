@@ -1,12 +1,13 @@
 var TT = JT = {
 	checkLogin : function(){
 		var _ticket = $.cookie("JT_TICKET");
-		if(!_ticket){
+		var _username = $.cookie("JT_USERNAME");
+		if(!_ticket || !_username){
 			return ;
 		}
 		//当dataType类型为jsonp时，jQuery就会自动在请求链接上增加一个callback的参数
 		$.ajax({
-			url : "http://sso.jt.com/user/query/" + _ticket,
+			url : "http://sso.jt.com/user/query/" + _ticket+"/"+_username,
 			dataType : "jsonp",
 			type : "GET",
 			success : function(data){

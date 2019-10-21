@@ -1,6 +1,8 @@
 package com.jt.service;
 
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,22 +41,44 @@ public class DubboUserServiceImpl implements DubboUserService {
 	 * 
 	 */
 	@Override
-	public String doLogin(User user) {
-		User userDB = findUserByUP(user);
-		if (null != userDB) {
-			//1.生成秘钥
-			String uuid = UUID.randomUUID().toString();
-			String ticket = DigestUtils.md5DigestAsHex(uuid.getBytes());
-			//2将某些敏感数据进行脱敏处理
-			userDB.setPassword("********");
-			//2.将user对象转成json串
-			String value = ObjectMapperUtil.toJSON(userDB);
-			//将ticket保存到Redis中
-			jedis.setex(ticket, 7*24*3600, value);
-			return ticket;
+	public String doLogin(User user,String ip) {
+		String md5Pass = DigestUtils.md5DigestAsHex(user.getPassword().getBytes());
+		user.setPassword(md5Pass);
+		QueryWrapper<User> queryWrapper = new QueryWrapper<User>(user);
+		User userDB = userMapper.selectOne(queryWrapper);
+		if (null == userDB) {
+			//用户名和密码不正确
+			return null;
 		}
-		return null;
+		//表示用户信息正确，保存ticket/ip/userjson
+		String uuid = UUID.randomUUID().toString();
+		String ticket = DigestUtils.md5DigestAsHex(uuid.getBytes());
+		//脱敏处理
+		userDB.setPassword("********");
+		String userjson = ObjectMapperUtil.toJSON(userDB);
+		Map<String, String> hash = new HashMap<String, String>();
+		hash.put("JT_TICKET", ticket);
+		hash.put("JT_USERJSON", userjson);
+		hash.put("JT_IP", ip);
+		jedis.hmset(user.getUsername(), hash);
+		jedis.expire(user.getUsername(), 7*24*3600);
+		return ticket;
 	}
+//		User userDB = findUserByUP(user);
+//		if (null != userDB) {
+//			//1.生成秘钥
+//			String uuid = UUID.randomUUID().toString();
+//			String ticket = DigestUtils.md5DigestAsHex(uuid.getBytes());
+//			//2将某些敏感数据进行脱敏处理
+//			userDB.setPassword("********");
+//			//2.将user对象转成json串
+//			String value = ObjectMapperUtil.toJSON(userDB);
+//			//将ticket保存到Redis中
+//			jedis.setex(ticket, 7*24*3600, value);
+//			return ticket;
+//		}
+//		return null;
+//	}
 
 	public User findUserByUP(User user) {
 		String mdrPass = DigestUtils.md5DigestAsHex(user.getPassword().getBytes());

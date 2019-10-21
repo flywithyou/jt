@@ -2,6 +2,7 @@ package com.jt.util;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 public class CookieUtil {
 	
@@ -22,5 +23,16 @@ public class CookieUtil {
 		}
 		//如果没有cookie，则直接返回null
 		return null;
+	}
+	public  static void addCookie(HttpServletRequest request,HttpServletResponse response,String cookieName,String cookieValue,int seconds,String domain) {
+		//将ticket保存到客户端的cookie中
+		Cookie ticketCookie = new Cookie(cookieName, cookieValue);
+		//设置cookie的生命周期
+		ticketCookie.setMaxAge(seconds);
+		//cookie的权限的设定，"/"表示在根路径下
+		ticketCookie.setPath("/");
+		ticketCookie.setDomain(domain);
+		//将cookie写到客户端
+		response.addCookie(ticketCookie);
 	}
 }
