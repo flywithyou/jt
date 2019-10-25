@@ -84,24 +84,30 @@ public class UserController {
 	public String logout(HttpServletRequest request,HttpServletResponse response) {
 		Cookie[] cookies = request.getCookies();
 		String ticket = null;
+		String username = null;
 		if (cookies.length != 0) {
 			for (Cookie cookie : cookies) {
 				//获取指定的cookie
 				if (cookie.getName().equals("JT_TICKET")) {
 					ticket = cookie.getValue();
-					break;					
+					continue;					
+				}
+				if (cookie.getName().equals("JT_USERNAME")) {
+					username = cookie.getValue();
 				}
 			}
 		}
-		if (ticket != null) {
+		if (ticket != null && username != null) {
 			//从缓存中删除cookie信息
 			jedisCluster.del(ticket);
 			//删除cookie(新建一个键名相同的cookie，并设置maxage为0，覆盖原来的）
-			Cookie cookie = new Cookie("JT_TICKET", "");
-			cookie.setMaxAge(0);
-			cookie.setPath("/");
-			cookie.setDomain("jt.com");
-			response.addCookie(cookie);
+			CookieUtil.addCookie(request, response, "JT_TICKET", ticket, 0, "jt.com");
+			CookieUtil.addCookie(request, response, "JT_USERNAME", username, 0, "jt.com");
+//			Cookie cookie = new Cookie("JT_TICKET", "");
+//			cookie.setMaxAge(0);
+//			cookie.setPath("/");
+//			cookie.setDomain("jt.com");
+//			response.addCookie(cookie);
 		}
 		return "redirect:/";
 	}

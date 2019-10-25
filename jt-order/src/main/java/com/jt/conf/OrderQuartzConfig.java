@@ -25,7 +25,7 @@ public class OrderQuartzConfig {
 		/*SimpleScheduleBuilder builder = SimpleScheduleBuilder.simpleSchedule()
 				.withIntervalInMinutes(1)	//定义时间周期
 				.repeatForever();*/
-		CronScheduleBuilder scheduleBuilder = CronScheduleBuilder.cronSchedule("0 0/1 * * * ?");
+		CronScheduleBuilder scheduleBuilder = CronScheduleBuilder.cronSchedule("0 0/30 * * * ?");
 		return TriggerBuilder.newTrigger().forJob(orderjobDetail()).withIdentity("orderQuartz").withSchedule(scheduleBuilder).build();
 	}
 }
